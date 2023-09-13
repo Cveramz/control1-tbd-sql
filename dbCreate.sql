@@ -61,6 +61,7 @@ CREATE TABLE venta (
 	id_venta BIGINT PRIMARY KEY,
 	monto BIGINT,
 	num_tienda INT REFERENCES tienda (num_tienda),
+	fecha SMALLDATETIME,
 );
 
 -- Tabla tipo_doc
@@ -68,6 +69,7 @@ CREATE TABLE tipo_doc (
 	num_documento BIGINT PRIMARY KEY,
 	tipo VARCHAR(50),
 	id_venta BIGINT REFERENCES  venta (id_venta),
+	fecha SMALLDATETIME,
 );
 -- tabla prod_venta
 CREATE TABLE prod_venta(
