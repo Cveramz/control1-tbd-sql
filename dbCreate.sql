@@ -35,7 +35,7 @@ monto_liquido INT
 
 --Tabla Vendedor
 CREATE TABLE vendedor (
-id_vendedor SERIAL PRIMARY KEY,
+rut_vendedor SERIAL PRIMARY KEY,
 nombre_vendedor VARCHAR(50),
 apellido_vendedor VARCHAR(50),
 rut_empleado BIGINT REFERENCES empleado(rut_empleado)
@@ -61,7 +61,7 @@ CREATE TABLE venta (
 	id_venta BIGINT PRIMARY KEY,
 	monto BIGINT,
 	num_tienda INT REFERENCES tienda (num_tienda),
-	fecha SMALLDATETIME,
+	fecha DATE,
 );
 
 -- Tabla tipo_doc
@@ -69,7 +69,6 @@ CREATE TABLE tipo_doc (
 	num_documento BIGINT PRIMARY KEY,
 	tipo VARCHAR(50),
 	id_venta BIGINT REFERENCES  venta (id_venta),
-	fecha SMALLDATETIME,
 );
 -- tabla prod_venta
 CREATE TABLE prod_venta(
