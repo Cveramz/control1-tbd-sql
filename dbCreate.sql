@@ -46,14 +46,14 @@ CREATE TABLE tienda (
 	num_tienda INT PRIMARY KEY,
 	id_comuna INT REFERENCES comuna (id_comuna),
 	direccion VARCHAR(50),
-	alias VARCHAR(50),
+	alias VARCHAR(50)
 );
 
 -- Tabla tienda_empleado
 CREATE TABLE tienda_empleado(
 	id_tiendaempleado INT PRIMARY KEY,
 	num_tienda INT REFERENCES tienda (num_tienda),
-	rut_empleado SERIAL REFERENCES empleado (rut_empleado),
+	rut_empleado SERIAL REFERENCES empleado (rut_empleado)
 );
 
 -- Tabla venta
@@ -61,19 +61,19 @@ CREATE TABLE venta (
 	id_venta BIGINT PRIMARY KEY,
 	monto BIGINT,
 	num_tienda INT REFERENCES tienda (num_tienda),
-	fecha DATE,
+	fecha DATE
 );
 
 -- Tabla tipo_doc
 CREATE TABLE tipo_doc (
 	num_documento BIGINT PRIMARY KEY,
 	tipo VARCHAR(50),
-	id_venta BIGINT REFERENCES  venta (id_venta),
+	id_venta BIGINT REFERENCES  venta (id_venta)
 );
 -- tabla prod_venta
 CREATE TABLE prod_venta(
 	id_prod_venta BIGINT PRIMARY KEY,
 	id_producto SERIAL REFERENCES  producto (id_producto),
 	id_venta BIGINT REFERENCES  venta (id_venta),
-	rut_vendedor SERIAL REFERENCES vendedor (rut_vendedor),
+	rut_vendedor SERIAL REFERENCES vendedor (rut_vendedor)
 );
