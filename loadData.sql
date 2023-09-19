@@ -92,15 +92,16 @@ INSERT INTO public.vendedor(rut_vendedor, nombre_vendedor, apellido_vendedor, ru
 -- venta
 INSERT INTO public.venta (id_venta, monto, num_tienda, fecha) VALUES 
 (1, 799990, 1, '2021-09-13'),
-(2, 799990, 2, '2020-09-14'),
-(3, 1299990, 3, '2022-09-15'),
-(4, 299990, 4, '2023-09-16'),
-(5, 1299990, 5, '2021-09-17'),
-(6, 399990, 6, '2022-09-18'),
-(7, 49990, 7, '2020-09-19'),
-(8, 49990, 8, '2021-09-20'),
-(9, 299990, 9, '2022-09-21'),
-(10, 49990, 10, '2020-09-22');
+(2, 799990, 2, '2020-08-14'),
+(3, 1299990, 3, '2022-07-15'),
+(4, 299990, 4, '2023-07-16'),
+(5, 1299990, 5, '2021-06-17'),
+(6, 399990, 6, '2022-05-18'),
+(7, 49990, 7, '2020-04-19'),
+(8, 49990, 8, '2021-04-20'),
+(9, 299990, 9, '2022-02-21'),
+(10, 49990, 10, '2020-10-22'),
+(11, 899990, 10, '2023-12-19');
 
 -- tipo doc
 INSERT INTO public.tipo_doc (num_documento, tipo, id_venta) VALUES 
@@ -113,7 +114,8 @@ INSERT INTO public.tipo_doc (num_documento, tipo, id_venta) VALUES
 (7, 'Boleta', 7),
 (8, 'Factura', 8),
 (9, 'Boleta', 9),
-(10, 'Factura', 10);
+(10, 'Factura', 10),
+(11, 'Boleta', 11);
 
 -- prod venta 
 INSERT INTO public.prod_venta (id_prod_venta, id_producto, id_venta, rut_vendedor)VALUES 
@@ -126,4 +128,5 @@ INSERT INTO public.prod_venta (id_prod_venta, id_producto, id_venta, rut_vendedo
 (7, 2, 7, 239645337),
 (8, 3, 8, 144793647),
 (9, 4, 9, 176834273),
-(10, 5, 10, 101432132);
+(10, 5, 10, 101432132),
+(11, 6, 11, 101432132);
