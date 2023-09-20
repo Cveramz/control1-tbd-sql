@@ -162,3 +162,66 @@ WHERE
         GROUP BY
             year, month
     );
+/* -------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
+
+-- el vendedor que ha recaudado más dinero para la tienda por año
+
+
+/* -------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
+
+-- el vendedor con mas productos vendidos por tienda
+
+WITH productos_vendidos_por_vendedor AS (
+    SELECT
+        t.num_tienda,
+        pv.rut_vendedor,
+        COUNT(pv.id_producto) AS cantidad_productos_vendidos
+    FROM
+        tienda t
+    INNER JOIN venta v ON t.num_tienda = v.num_tienda
+    INNER JOIN prod_venta pv ON v.id_venta = pv.id_venta
+    GROUP BY
+        t.num_tienda, pv.rut_vendedor
+)
+SELECT
+    t.num_tienda,
+    t.alias AS nombre_tienda,
+    pv.rut_vendedor,
+    e.nombre AS nombre_vendedor,
+    e.apellido AS apellido_vendedor,
+    pv.cantidad_productos_vendidos AS productos_vendidos_por_vendedor
+FROM
+    productos_vendidos_por_vendedor pv
+INNER JOIN empleado e ON pv.rut_vendedor = e.rut_empleado
+INNER JOIN tienda t ON pv.num_tienda = t.num_tienda
+WHERE
+    (pv.num_tienda, pv.cantidad_productos_vendidos) IN (
+        SELECT
+            num_tienda, MAX(cantidad_productos_vendidos)
+        FROM
+            productos_vendidos_por_vendedor
+        GROUP BY
+            num_tienda
+    );
+/* -------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
+
+-- el empleado con mayor sueldo por mes (en este caso es fijo el sueldo)
+
+WITH sueldos_maximos AS (
+    SELECT
+        MAX(monto_liquido) AS maximo_sueldo_liquido
+    FROM
+        sueldo
+)
+SELECT
+    empleado.rut_empleado,
+    empleado.nombre,
+    empleado.apellido,
+    sueldo.monto_liquido AS sueldo
+FROM
+    sueldo
+INNER JOIN empleado ON sueldo.rut_empleado = empleado.rut_empleado
+INNER JOIN sueldos_maximos ON sueldo.monto_liquido = sueldos_maximos.maximo_sueldo_liquido;
