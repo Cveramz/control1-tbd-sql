@@ -233,3 +233,14 @@ INNER JOIN empleado ON sueldo.rut_empleado = empleado.rut_empleado
 INNER JOIN sueldos_maximos ON sueldo.monto_liquido = sueldos_maximos.maximo_sueldo_liquido;
 /* -------------------------------------------------------------- */
 /* -------------------------------------------------------------- */
+
+-- la tienda con menor recaudacion por mes
+
+SELECT EXTRACT(MONTH FROM v.fecha) AS mes, t.num_tienda, MIN(v.monto) AS menor_monto_venta
+FROM tienda t
+INNER JOIN venta v ON t.num_tienda = v.num_tienda
+GROUP BY EXTRACT(MONTH FROM v.fecha), t.num_tienda
+ORDER BY MIN(v.monto)
+LIMIT 1;
+/* -------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
