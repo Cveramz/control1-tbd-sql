@@ -167,7 +167,13 @@ WHERE
 
 -- el vendedor que ha recaudado más dinero para la tienda por año
 
-
+SELECT EXTRACT(YEAR FROM v.fecha) AS agno, t.num_tienda AS tienda, pv.rut_vendedor,
+    SUM(v.monto) AS suma_montos
+FROM venta v
+INNER JOIN tienda t ON v.num_tienda = t.num_tienda
+INNER JOIN prod_venta pv ON v.id_venta = pv.id_venta
+GROUP BY EXTRACT(YEAR FROM v.fecha), t.num_tienda, pv.rut_vendedor
+ORDER BY EXTRACT(YEAR FROM v.fecha), t.num_tienda, pv.rut_vendedor;
 /* -------------------------------------------------------------- */
 /* -------------------------------------------------------------- */
 
@@ -225,3 +231,5 @@ FROM
     sueldo
 INNER JOIN empleado ON sueldo.rut_empleado = empleado.rut_empleado
 INNER JOIN sueldos_maximos ON sueldo.monto_liquido = sueldos_maximos.maximo_sueldo_liquido;
+/* -------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
