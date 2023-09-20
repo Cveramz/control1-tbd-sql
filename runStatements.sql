@@ -16,6 +16,9 @@ WHERE EXTRACT(YEAR FROM v.fecha) = 2021
 GROUP BY EXTRACT(MONTH FROM v.fecha), p.nombre_producto
 ORDER BY mes, total_ventas DESC
 LIMIT 1;
+/* -------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
+
 -- producto más económico por tienda
 
 SELECT
@@ -126,3 +129,36 @@ WHERE
     empleados_por_tienda.cantidad_empleados = subquery.min_cantidad_empleados;
 /* -------------------------------------------------------------- */
 /* -------------------------------------------------------------- */
+
+-- el vendedor con más ventas por mes
+
+WITH ventas_por_mes AS (
+    SELECT
+        EXTRACT(YEAR FROM v.fecha) AS year,
+        EXTRACT(MONTH FROM v.fecha) AS month,
+        pv.rut_vendedor,
+        COUNT(*) AS cantidad_ventas
+    FROM
+        venta v
+    INNER JOIN prod_venta pv ON v.id_venta = pv.id_venta
+    GROUP BY
+        year, month, pv.rut_vendedor
+)
+SELECT
+    TO_CHAR(to_date(year || '-' || month || '-01', 'YYYY-MM-DD'), 'YYYY-MM') AS fecha,
+    vp.rut_vendedor,
+    e.nombre AS nombre_vendedor,
+    e.apellido AS apellido_vendedor,
+    vp.cantidad_ventas AS ventas_por_mes
+FROM
+    ventas_por_mes vp
+INNER JOIN empleado e ON vp.rut_vendedor = e.rut_empleado
+WHERE
+    (year, month, cantidad_ventas) IN (
+        SELECT
+            year, month, MAX(cantidad_ventas)
+        FROM
+            ventas_por_mes
+        GROUP BY
+            year, month
+    );

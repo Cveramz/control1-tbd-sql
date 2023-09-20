@@ -65,7 +65,8 @@ INSERT INTO public.producto (id_producto, nombre_producto, precio)VALUES
 (7, 'Auriculares Inalámbricos Bose QuietComfort 45', 49990),
 (8, 'Impresora HP LaserJet Pro', 299990),
 (9, 'Monitor Dell UltraSharp 27"', 399990),
-(10, 'Reproductor de Blu-ray Samsung', 79990);
+(10, 'Reproductor de Blu-ray Samsung', 79990),
+(11, 'Altavoces Bluetooth JBL', 69990);
 
 -- tienda empleado
 
@@ -101,7 +102,8 @@ INSERT INTO public.venta (id_venta, monto, num_tienda, fecha) VALUES
 (8, 49990, 8, '2021-04-20'),
 (9, 299990, 9, '2022-02-21'),
 (10, 49990, 10, '2020-10-22'),
-(11, 899990, 10, '2023-12-19');
+(11, 899990, 10, '2023-12-19'),
+(12, 69990, 10, '2023-12-19');
 
 -- tipo doc
 INSERT INTO public.tipo_doc (num_documento, tipo, id_venta) VALUES 
@@ -115,7 +117,8 @@ INSERT INTO public.tipo_doc (num_documento, tipo, id_venta) VALUES
 (8, 'Factura', 8),
 (9, 'Boleta', 9),
 (10, 'Factura', 10),
-(11, 'Boleta', 11);
+(11, 'Boleta', 11),
+(12, 'Factura', 12);
 
 -- prod venta 
 INSERT INTO public.prod_venta (id_prod_venta, id_producto, id_venta, rut_vendedor)VALUES 
@@ -129,4 +132,5 @@ INSERT INTO public.prod_venta (id_prod_venta, id_producto, id_venta, rut_vendedo
 (8, 3, 8, 144793647),
 (9, 4, 9, 176834273),
 (10, 5, 10, 101432132),
-(11, 6, 11, 101432132);
+(11, 6, 11, 101432132),
+(12,11,12, 101432132);
