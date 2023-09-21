@@ -5,17 +5,41 @@
 /* -------------------------------------------------------------- */
 
 -- producto más vendido por mes en 2021
-SELECT 
-    EXTRACT(MONTH FROM v.fecha) AS mes,
-    p.nombre_producto,
-    SUM(pv.id_producto) as total_ventas
-FROM venta v
-JOIN prod_venta pv ON v.id_venta = pv.id_venta
-JOIN producto p ON pv.id_producto = p.id_producto
-WHERE EXTRACT(YEAR FROM v.fecha) = 2021
-GROUP BY EXTRACT(MONTH FROM v.fecha), p.nombre_producto
-ORDER BY mes, total_ventas DESC
-LIMIT 1;
+WITH MesesVentas AS (
+    SELECT
+        EXTRACT(MONTH FROM v.fecha) AS mes,
+        p.nombre_producto AS producto_mas_vendido,
+        COUNT(*) AS cantidad_vendida
+    FROM
+        venta v
+    JOIN
+        prod_venta pv ON v.id_venta = pv.id_venta
+    JOIN
+        producto p ON pv.id_producto = p.id_producto
+    WHERE
+        EXTRACT(YEAR FROM v.fecha) = 2021
+    GROUP BY
+        mes, p.nombre_producto
+)
+, RankMesesVentas AS (
+    SELECT
+        mes,
+        producto_mas_vendido,
+        cantidad_vendida,
+        RANK() OVER(PARTITION BY mes ORDER BY cantidad_vendida DESC) AS ranking
+    FROM
+        MesesVentas
+)
+SELECT
+    rmv.mes,
+    rmv.producto_mas_vendido,
+    rmv.cantidad_vendida
+FROM
+    RankMesesVentas rmv
+WHERE
+    rmv.ranking = 1
+ORDER BY
+    rmv.mes;
 /* -------------------------------------------------------------- */
 /* -------------------------------------------------------------- */
 
