@@ -46,53 +46,59 @@ INNER JOIN producto p ON pv.id_producto = p.id_producto AND p.precio = subquery.
 /* -------------------------------------------------------------- */
 /* -------------------------------------------------------------- */
 
--- ventas por mes, entre boletas y facturas 
-
+-- ventas por mes, entre boletas y facturas (Asumiendo que se pide las cantidades)
 SELECT
-	EXTRACT(YEAR FROM v.fecha) AS año,
+    EXTRACT(YEAR FROM v.fecha) AS año,
     EXTRACT(MONTH FROM v.fecha) AS mes,
-    SUM(CASE WHEN td.tipo = 'Boleta' THEN v.monto ELSE 0 END) AS total_boletas,
-    SUM(CASE WHEN td.tipo = 'Factura' THEN v.monto ELSE 0 END) AS total_facturas
+    SUM(CASE WHEN td.tipo = 'Boleta' THEN 1 ELSE 0 END) AS cantidad_boletas,
+    SUM(CASE WHEN td.tipo = 'Factura' THEN 1 ELSE 0 END) AS cantidad_facturas
 FROM
     venta v
 INNER JOIN
     tipo_doc td ON v.id_venta = td.id_venta
 GROUP BY
-    EXTRACT(MONTH FROM v.fecha),
-	EXTRACT(YEAR FROM v.fecha) 
+    EXTRACT(YEAR FROM v.fecha),
+    EXTRACT(MONTH FROM v.fecha) 
 ORDER BY
-    mes;
+    año, mes;
+
 /* -------------------------------------------------------------- */
 /* -------------------------------------------------------------- */
 
 -- el empleado que mas gano por tienda
 
+WITH SueldosEnumerados AS (
+    SELECT
+        t.num_tienda,
+        t.alias AS alias_tienda,
+        c.nombre_comuna,
+        e.nombre,
+        e.apellido,
+        e.cargo,
+        s.monto_liquido AS sueldo_maximo,
+        ROW_NUMBER() OVER (PARTITION BY t.num_tienda ORDER BY s.monto_liquido DESC) AS rn
+    FROM
+        tienda t
+    JOIN
+        tienda_empleado te ON t.num_tienda = te.num_tienda
+    JOIN
+        empleado e ON te.rut_empleado = e.rut_empleado
+    JOIN
+        comuna c ON t.id_comuna = c.id_comuna
+    JOIN
+        sueldo s ON e.rut_empleado = s.rut_empleado
+)
 SELECT
-    t.num_tienda,
-    t.alias AS alias_tienda,
-    c.nombre_comuna,
-    e.nombre,
-    e.apellido,
-    e.cargo,
-    s.monto_liquido AS sueldo_maximo
-FROM
-    tienda t
-JOIN
-    tienda_empleado te ON t.num_tienda = te.num_tienda
-JOIN
-    empleado e ON te.rut_empleado = e.rut_empleado
-JOIN
-    comuna c ON t.id_comuna = c.id_comuna
-JOIN
-    sueldo s ON e.rut_empleado = s.rut_empleado
-WHERE
-    s.monto_liquido = (
-        SELECT MAX(sueldo.monto_liquido)
-        FROM sueldo
-        WHERE sueldo.rut_empleado = e.rut_empleado
-    )
-ORDER BY
-    t.num_tienda;
+    num_tienda,
+    alias_tienda,
+    nombre_comuna,
+    nombre,
+    apellido,
+    cargo,
+    sueldo_maximo
+FROM SueldosEnumerados
+WHERE rn = 1
+ORDER BY num_tienda;
 /* -------------------------------------------------------------- */
 /* -------------------------------------------------------------- */
 
@@ -236,11 +242,37 @@ INNER JOIN sueldos_maximos ON sueldo.monto_liquido = sueldos_maximos.maximo_suel
 
 -- la tienda con menor recaudacion por mes
 
-SELECT EXTRACT(MONTH FROM v.fecha) AS mes, t.num_tienda, MIN(v.monto) AS menor_monto_venta
-FROM tienda t
-INNER JOIN venta v ON t.num_tienda = v.num_tienda
-GROUP BY EXTRACT(MONTH FROM v.fecha), t.num_tienda
-ORDER BY MIN(v.monto)
-LIMIT 1;
+WITH recaudacion_por_mes AS (
+    SELECT
+        t.num_tienda,
+        EXTRACT(YEAR FROM v.fecha) AS año,
+        EXTRACT(MONTH FROM v.fecha) AS mes,
+        SUM(v.monto) AS total_recaudado
+    FROM
+        tienda t
+    LEFT JOIN venta v ON t.num_tienda = v.num_tienda
+    GROUP BY
+        t.num_tienda, año, mes
+),
+tienda_recaudacion_minima AS (
+    SELECT
+        año AS min_año,
+        mes AS min_mes,
+        MIN(total_recaudado) AS min_recaudacion
+    FROM
+        recaudacion_por_mes
+    GROUP BY
+        año, mes
+)
+SELECT
+    to_date(min_año || '-' || min_mes || '-01', 'YYYY-MM-DD') AS fecha,
+    r.num_tienda,
+    t.alias AS nombre_tienda,
+    r.total_recaudado AS recaudacion_por_mes
+FROM
+    recaudacion_por_mes r
+INNER JOIN tienda t ON r.num_tienda = t.num_tienda
+INNER JOIN tienda_recaudacion_minima trm ON r.año = trm.min_año AND r.mes = trm.min_mes AND r.total_recaudado = trm.min_recaudacion;
+
 /* -------------------------------------------------------------- */
 /* -------------------------------------------------------------- */
